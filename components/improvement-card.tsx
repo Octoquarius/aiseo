@@ -70,7 +70,7 @@ export function ImprovementCard({ improvement }: { improvement: ImprovementData 
           <DialogTrigger render={<Button size="sm" className="shrink-0" />}>
             Improve
           </DialogTrigger>
-          <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>{improvement.title}</DialogTitle>
               <DialogDescription>
@@ -94,7 +94,7 @@ export function ImprovementCard({ improvement }: { improvement: ImprovementData 
               {improvement.current_code && (
                 <section>
                   <h4 className="mb-1 text-sm font-semibold">Mevcut durum</h4>
-                  <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs">
+                  <pre className="max-h-[30vh] overflow-auto rounded-md bg-muted p-3 text-xs">
                     <code>{improvement.current_code}</code>
                   </pre>
                 </section>
@@ -106,7 +106,7 @@ export function ImprovementCard({ improvement }: { improvement: ImprovementData 
                     <h4 className="text-sm font-semibold">Önerilen kod</h4>
                     <CopyButton text={improvement.suggested_code} />
                   </div>
-                  <pre className="overflow-x-auto rounded-md border bg-emerald-50 p-3 text-xs dark:bg-emerald-950/30">
+                  <pre className="max-h-[30vh] overflow-auto rounded-md border bg-emerald-50 p-3 text-xs dark:bg-emerald-950/30">
                     <code>{improvement.suggested_code}</code>
                   </pre>
                 </section>
