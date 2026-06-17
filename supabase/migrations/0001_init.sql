@@ -39,6 +39,10 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- SECURITY DEFINER fonksiyonun REST RPC üzerinden çağrılmasını engelle
+-- (trigger tablo sahibi yetkisiyle çalıştığı için etkilenmez).
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+
 -- ============================================================
 -- sites: kullanıcının takip ettiği URL'ler
 -- ============================================================

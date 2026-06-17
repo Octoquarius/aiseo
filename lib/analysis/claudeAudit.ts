@@ -16,7 +16,7 @@ const AUDIT_TOOL: Anthropic.Tool = {
       },
       summary: {
         type: "string",
-        description: "Sitenin mevcut durumunun 2-4 cümlelik özeti (Türkçe).",
+        description: "Sitenin mevcut durumunun EN FAZLA 2-3 kısa cümlelik özeti (Türkçe). Uzun yazma.",
       },
       category_scores: {
         type: "object",
@@ -41,7 +41,7 @@ const AUDIT_TOOL: Anthropic.Tool = {
       issues: {
         type: "array",
         description:
-          "Sitenin AI tarafından daha görünür ve önerilebilir olması için yapılması gereken somut iyileştirmeler. En etkili 5-12 madde.",
+          "ZORUNLU. Sitenin AI tarafından daha görünür ve önerilebilir olması için yapılması gereken somut iyileştirmeler. En etkili 5-8 madde (her zaman en az 3 madde üret). Kod örneklerini kısa ve odaklı tut.",
         items: {
           type: "object",
           properties: {
@@ -144,7 +144,7 @@ export async function claudeAudit(
 
   const response = await anthropic.messages.create({
     model,
-    max_tokens: 4096,
+    max_tokens: 8192,
     temperature: 0.3,
     tools: [AUDIT_TOOL],
     tool_choice: { type: "tool", name: "report_geo_audit" },
@@ -155,7 +155,10 @@ export async function claudeAudit(
     (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
   );
   if (!toolUse) {
-    throw new Error("Claude yapısal denetim sonucu döndürmedi.");
+    // max_tokens'a takılıp tool çıktısı tamamlanmadıysa burada yakalanır.
+    throw new Error(
+      `Claude yapısal denetim sonucu döndürmedi (stop_reason: ${response.stop_reason}).`,
+    );
   }
 
   const raw = toolUse.input as {
