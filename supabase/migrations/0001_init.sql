@@ -1,5 +1,6 @@
 -- AI SEO / GEO aracı — başlangıç şeması
 -- Tüm tablolar Row Level Security (RLS) ile kullanıcıya kısıtlıdır.
+-- NOT: RLS satır erişimini denetler; tablo düzeyinde GRANT (en altta) ayrıca gereklidir.
 
 -- ============================================================
 -- profiles: auth.users ile 1-1
@@ -186,3 +187,22 @@ create policy "conv_select_own" on public.conversions
   for select using (
     exists (select 1 from public.sites s where s.id = conversions.site_id and s.user_id = auth.uid())
   );
+
+-- ============================================================
+-- Tablo düzeyinde izinler (RLS'e ek olarak ZORUNLU)
+-- authenticated = giriş yapmış kullanıcı; anon = giriş yapmamış.
+-- ============================================================
+grant usage on schema public to anon, authenticated;
+
+grant select, insert, update, delete on
+  public.profiles,
+  public.sites,
+  public.audits,
+  public.improvements,
+  public.visibility_queries,
+  public.visibility_results,
+  public.conversions
+to authenticated;
+
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to authenticated;
