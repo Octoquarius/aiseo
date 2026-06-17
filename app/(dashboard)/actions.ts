@@ -31,6 +31,10 @@ async function persistAudit(siteId: string, url: string) {
     .single();
   if (auditErr || !audit) throw new Error(auditErr?.message || "Audit kaydedilemedi.");
 
+  // Yeniden tarama: önceki iyileştirmeleri sil ki tekrar/birikme olmasın.
+  // Her tarama, sitenin güncel iyileştirme setiyle değiştirilir.
+  await supabase.from("improvements").delete().eq("site_id", siteId);
+
   if (output.audit.issues.length > 0) {
     const rows = output.audit.issues.map((i) => ({
       audit_id: audit.id,
