@@ -70,43 +70,43 @@ export function ImprovementCard({ improvement }: { improvement: ImprovementData 
           <DialogTrigger render={<Button size="sm" className="shrink-0" />}>
             Improve
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-3xl">
             <DialogHeader>
-              <DialogTitle>{improvement.title}</DialogTitle>
+              <DialogTitle className="break-words">{improvement.title}</DialogTitle>
               <DialogDescription>
                 {categoryLabel(improvement.category)} · {SEVERITY_LABEL[improvement.severity]} öncelik
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4">
-              <section>
+            <div className="min-w-0 space-y-4">
+              <section className="min-w-0">
                 <h4 className="mb-1 text-sm font-semibold">Açıklama</h4>
-                <p className="text-sm text-muted-foreground">{improvement.description}</p>
+                <p className="text-sm break-words text-muted-foreground">{improvement.description}</p>
               </section>
 
               {improvement.code_location && (
-                <section>
+                <section className="min-w-0">
                   <h4 className="mb-1 text-sm font-semibold">Kodun yeri</h4>
-                  <p className="rounded-md bg-muted px-3 py-2 font-mono text-sm">{improvement.code_location}</p>
+                  <p className="rounded-md bg-muted px-3 py-2 font-mono text-sm break-words">{improvement.code_location}</p>
                 </section>
               )}
 
               {improvement.current_code && (
-                <section>
+                <section className="min-w-0">
                   <h4 className="mb-1 text-sm font-semibold">Mevcut durum</h4>
-                  <pre className="max-h-[30vh] overflow-auto rounded-md bg-muted p-3 text-xs">
+                  <pre className="max-h-[40vh] overflow-auto rounded-md bg-muted p-3 text-xs">
                     <code>{improvement.current_code}</code>
                   </pre>
                 </section>
               )}
 
               {improvement.suggested_code && (
-                <section>
-                  <div className="mb-1 flex items-center justify-between">
+                <section className="min-w-0">
+                  <div className="mb-1 flex items-center justify-between gap-2">
                     <h4 className="text-sm font-semibold">Önerilen kod</h4>
                     <CopyButton text={improvement.suggested_code} />
                   </div>
-                  <pre className="max-h-[30vh] overflow-auto rounded-md border bg-emerald-50 p-3 text-xs dark:bg-emerald-950/30">
+                  <pre className="max-h-[40vh] overflow-auto rounded-md border bg-emerald-50 p-3 text-xs dark:bg-emerald-950/30">
                     <code>{improvement.suggested_code}</code>
                   </pre>
                 </section>
