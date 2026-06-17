@@ -4,6 +4,7 @@ import { SiteCard, type SiteCardData } from "@/components/site-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { scoreColor } from "@/lib/score";
+import { appearanceStats, type ResultLike } from "@/lib/visibility/stats";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +57,11 @@ export default async function DashboardPage() {
     openBySite.set(imp.site_id, (openBySite.get(imp.site_id) ?? 0) + 1);
   }
 
+  const { data: visResults } = await supabase
+    .from("visibility_results")
+    .select("query_id, engine, appeared, rank, checked_at");
+  const visStats = appearanceStats((visResults ?? []) as ResultLike[]);
+
   const scored = siteList.filter((s) => s.latest_score != null);
   const avgScore =
     scored.length > 0
@@ -86,9 +92,13 @@ export default async function DashboardPage() {
         <StatCard title="Açık iyileştirme" value={String(totalOpen)} hint="Improvements sekmesinde" />
         <StatCard
           title="AI aramalarında görünürlük"
-          value="—"
-          badge="Yakında"
-          hint="Faz 2: AI motorlarında ne sıklıkla önerildiğiniz"
+          value={visStats.rate != null ? `%${visStats.rate}` : "—"}
+          valueClass={scoreColor(visStats.rate)}
+          hint={
+            visStats.total > 0
+              ? `${visStats.appeared}/${visStats.total} soruda önerildiniz`
+              : "Visibility sekmesinden tarama başlatın"
+          }
         />
       </div>
 

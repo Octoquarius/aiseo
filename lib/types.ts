@@ -91,3 +91,23 @@ export interface FullAuditOutput {
   audit: AuditResult;
   model: string;
 }
+
+// ============================================================
+// Faz 2: AI görünürlük takibi
+// ============================================================
+
+// Şu an web-aramalı Claude tek motor; ileride openai/perplexity eklenebilir.
+export type VisibilityEngine = "claude-web";
+
+export interface SeedQuery {
+  query_text: string;
+}
+
+// Bir sorgunun bir motordaki sonucunun analizi.
+export interface ProbeResult {
+  appeared: boolean;
+  rank: number | null; // anıldıysa kaçıncı sırada (1 = ilk önerilen), yoksa null
+  snippet: string | null; // markadan bahseden cümle/alıntı
+  competitors: string[]; // cevapta öne çıkan rakip marka/site adları
+  raw_answer: string; // motorun ham cevabı
+}
