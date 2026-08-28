@@ -17,9 +17,9 @@ export function AddSitesForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>URL Ekle</CardTitle>
+        <CardTitle>Add URL</CardTitle>
         <CardDescription>
-          Her satıra bir URL yazın (veya virgülle ayırın). Birden fazla site aynı anda eklenip analiz edilir.
+          Enter one URL per line (or separate them with commas). Multiple sites are added and analyzed at once.
         </CardDescription>
       </CardHeader>
       <form action={formAction}>
@@ -28,11 +28,11 @@ export function AddSitesForm() {
             name="urls"
             rows={3}
             required
-            placeholder={"https://siteniz.com\nhttps://baska-site.com"}
+            placeholder={"https://yoursite.com\nhttps://another-site.com"}
             className="w-full resize-y rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
           <Button type="submit" disabled={pending}>
-            {pending ? "Analiz ediliyor… (bu biraz sürebilir)" : "Ekle ve Analiz Et"}
+            {pending ? "Analyzing… (this may take a while)" : "Add and Analyze"}
           </Button>
         </CardContent>
       </form>

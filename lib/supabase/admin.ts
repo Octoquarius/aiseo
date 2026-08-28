@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Service-role istemcisi — RLS'i bypass eder. SADECE sunucu tarafında, güvenilir
-// işlemler (ör. analiz sonuçlarını yazma) için kullanılır. Asla istemciye sızdırma.
+// Service-role client — bypasses RLS. Used ONLY on the server, for trusted
+// operations (e.g. writing analysis results). Never leak this to the client.
 export function createAdminClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -1,4 +1,4 @@
-// Görünürlük sonuçlarından istatistik hesaplama yardımcıları.
+// Helpers for computing statistics from visibility results.
 
 export interface ResultLike {
   query_id: string | null;
@@ -8,7 +8,7 @@ export interface ResultLike {
   checked_at: string;
 }
 
-// Her (query_id + engine) için en son sonucu döndürür (eski tarama tekrarlarını eler).
+// Returns the latest result for each (query_id + engine) pair (filters out older repeat scans).
 export function latestResults<T extends ResultLike>(rows: T[]): T[] {
   const byKey = new Map<string, T>();
   for (const r of rows) {
@@ -21,7 +21,7 @@ export function latestResults<T extends ResultLike>(rows: T[]): T[] {
   return Array.from(byKey.values());
 }
 
-// En son sonuçlarda markanın önerilme oranı (0-100) ve sayımlar.
+// The brand's recommendation rate (0-100) and counts across the latest results.
 export function appearanceStats(rows: ResultLike[]): {
   rate: number | null;
   appeared: number;

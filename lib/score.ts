@@ -1,4 +1,4 @@
-// Skor renk/etiket yardımcıları (UI genelinde tutarlı).
+// Score color/label helpers (consistent across the UI).
 
 export function scoreColor(score: number | null | undefined): string {
   if (score == null) return "text-muted-foreground";
@@ -9,11 +9,11 @@ export function scoreColor(score: number | null | undefined): string {
 }
 
 export function scoreLabel(score: number | null | undefined): string {
-  if (score == null) return "Taranmadı";
-  if (score >= 80) return "Mükemmel";
-  if (score >= 60) return "İyi";
-  if (score >= 40) return "Geliştirilmeli";
-  return "Zayıf";
+  if (score == null) return "Not scanned";
+  if (score >= 80) return "Excellent";
+  if (score >= 60) return "Good";
+  if (score >= 40) return "Needs improvement";
+  return "Poor";
 }
 
 export function severityWeight(severity: string): number {
@@ -21,9 +21,9 @@ export function severityWeight(severity: string): number {
 }
 
 export const SEVERITY_LABEL: Record<string, string> = {
-  high: "Yüksek",
-  medium: "Orta",
-  low: "Düşük",
+  high: "High",
+  medium: "Medium",
+  low: "Low",
 };
 
 export const SEVERITY_VARIANT: Record<string, "destructive" | "default" | "secondary"> = {

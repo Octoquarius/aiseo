@@ -1,5 +1,5 @@
-// Bir site için marka adını belirler.
-// Öncelik: açıkça verilen brand -> hostname'den türetilen ad.
+// Determines the brand name for a site.
+// Priority: explicitly given brand -> name derived from the hostname.
 export function deriveBrand(url: string, name?: string | null, brand?: string | null): string {
   if (brand && brand.trim()) return brand.trim();
 
@@ -10,8 +10,8 @@ export function deriveBrand(url: string, name?: string | null, brand?: string | 
     host = name || url;
   }
   host = host.replace(/^www\./, "");
-  // İlk etiket markadır (ör. "shop.acme.co.uk" -> "shop"? hayır -> "acme").
-  // Basit yaklaşım: TLD ve yaygın ikinci seviye ekleri at, ana etiketi al.
+  // The first label is the brand (e.g. "shop.acme.co.uk" -> "shop"? no -> "acme").
+  // Simple approach: drop the TLD and common second-level suffixes, take the main label.
   const parts = host.split(".");
   // "acme.com" -> acme ; "shop.acme.com" -> acme ; "acme.co.uk" -> acme
   let labelIdx = parts.length - 2;
@@ -22,11 +22,11 @@ export function deriveBrand(url: string, name?: string | null, brand?: string | 
     labelIdx = parts.length - 3;
   }
   const brandLabel = parts[Math.max(0, labelIdx)] || host;
-  // İlk harfi büyüt.
+  // Capitalize the first letter.
   return brandLabel.charAt(0).toUpperCase() + brandLabel.slice(1);
 }
 
-// Cevap metninde marka/domain eşleşmesi için kullanılacak anahtarlar.
+// Keys used to match brand/domain mentions in answer text.
 export function brandAliases(url: string, brand: string): string[] {
   const aliases = new Set<string>([brand.toLowerCase()]);
   try {
@@ -34,7 +34,7 @@ export function brandAliases(url: string, brand: string): string[] {
     aliases.add(host.toLowerCase());
     aliases.add(host.split(".")[0].toLowerCase());
   } catch {
-    /* yok say */
+    /* ignore */
   }
   return Array.from(aliases).filter(Boolean);
 }

@@ -42,7 +42,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <span className="hidden text-sm text-muted-foreground sm:inline">{user.email}</span>
             <form action={logout}>
               <Button variant="outline" size="sm" type="submit">
-                Çıkış
+                Log Out
               </Button>
             </form>
           </div>

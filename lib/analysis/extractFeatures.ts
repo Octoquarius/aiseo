@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import type { HtmlFeatures } from "@/lib/types";
 
-// JS bağımlılığını ele veren yaygın engelleme mesajları (EN + TR + DE).
+// Common blocking messages that reveal a JS dependency (EN + TR + DE).
 const JS_BLOCK_INDICATORS = [
   "enable javascript",
   "javascript is required",
@@ -21,7 +21,7 @@ const FAQ_INDICATORS = [
   "sss",
 ];
 
-// n8n "Extract HTML Features" mantığının cheerio portu + GEO sinyalleri.
+// Cheerio port of n8n's "Extract HTML Features" logic + GEO signals.
 export function extractFeatures(
   html: string,
   finalUrl: string,
@@ -29,12 +29,12 @@ export function extractFeatures(
 ): HtmlFeatures {
   const $ = cheerio.load(html);
 
-  // Script/style'ları kaldırıp görünür metni çıkar.
+  // Remove script/style tags and extract the visible text.
   $("script, style, noscript").remove();
   const cleanedText = $("body").text().replace(/\s+/g, " ").trim();
   const lowerText = cleanedText.toLowerCase();
 
-  const $orig = cheerio.load(html); // ham (etiketler korunmuş) kopya
+  const $orig = cheerio.load(html); // raw (tags preserved) copy
 
   const structuredDataTypes: string[] = [];
   $orig('script[type="application/ld+json"]').each((_, el) => {
@@ -74,7 +74,7 @@ export function extractFeatures(
       if (abs.origin === origin) internalLinkCount++;
       else externalLinkCount++;
     } catch {
-      /* geçersiz href yok say */
+      /* ignore invalid href */
     }
   });
 

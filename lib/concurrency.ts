@@ -1,4 +1,4 @@
-// Sınırlı eşzamanlılıkla bir liste üzerinde async işlem çalıştırır; sonuçları sırayla döndürür.
+// Runs an async operation over a list with bounded concurrency; returns results in order.
 export async function mapLimit<T, R>(
   items: T[],
   limit: number,

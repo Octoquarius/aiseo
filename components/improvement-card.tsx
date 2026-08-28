@@ -42,8 +42,8 @@ export function ImprovementCard({ improvement }: { improvement: ImprovementData 
   const setStatus = (status: ImprovementStatus) =>
     startTransition(async () => {
       const res = await updateImprovementStatus(improvement.id, status);
-      if (res.ok) toast.success(status === "fixed" ? "Düzeltildi olarak işaretlendi." : "Güncellendi.");
-      else toast.error(res.error || "Güncellenemedi.");
+      if (res.ok) toast.success(status === "fixed" ? "Marked as fixed." : "Updated.");
+      else toast.error(res.error || "Could not update.");
     });
 
   const done = improvement.status !== "open";
@@ -60,7 +60,7 @@ export function ImprovementCard({ improvement }: { improvement: ImprovementData 
             {improvement.siteName && (
               <span className="text-xs text-muted-foreground">{improvement.siteName}</span>
             )}
-            {done && <Badge variant="secondary">{improvement.status === "fixed" ? "Düzeltildi" : "Yok sayıldı"}</Badge>}
+            {done && <Badge variant="secondary">{improvement.status === "fixed" ? "Fixed" : "Dismissed"}</Badge>}
           </div>
           <p className="font-medium">{improvement.title}</p>
           <p className="line-clamp-2 text-sm text-muted-foreground">{improvement.description}</p>
@@ -74,26 +74,26 @@ export function ImprovementCard({ improvement }: { improvement: ImprovementData 
             <DialogHeader>
               <DialogTitle className="break-words">{improvement.title}</DialogTitle>
               <DialogDescription>
-                {categoryLabel(improvement.category)} · {SEVERITY_LABEL[improvement.severity]} öncelik
+                {categoryLabel(improvement.category)} · {SEVERITY_LABEL[improvement.severity]} priority
               </DialogDescription>
             </DialogHeader>
 
             <div className="min-w-0 space-y-4">
               <section className="min-w-0">
-                <h4 className="mb-1 text-sm font-semibold">Açıklama</h4>
+                <h4 className="mb-1 text-sm font-semibold">Description</h4>
                 <p className="text-sm break-words text-muted-foreground">{improvement.description}</p>
               </section>
 
               {improvement.code_location && (
                 <section className="min-w-0">
-                  <h4 className="mb-1 text-sm font-semibold">Kodun yeri</h4>
+                  <h4 className="mb-1 text-sm font-semibold">Code location</h4>
                   <p className="rounded-md bg-muted px-3 py-2 font-mono text-sm break-words">{improvement.code_location}</p>
                 </section>
               )}
 
               {improvement.current_code && (
                 <section className="min-w-0">
-                  <h4 className="mb-1 text-sm font-semibold">Mevcut durum</h4>
+                  <h4 className="mb-1 text-sm font-semibold">Current state</h4>
                   <pre className="max-h-[40vh] overflow-auto rounded-md bg-muted p-3 text-xs">
                     <code>{improvement.current_code}</code>
                   </pre>
@@ -103,7 +103,7 @@ export function ImprovementCard({ improvement }: { improvement: ImprovementData 
               {improvement.suggested_code && (
                 <section className="min-w-0">
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-semibold">Önerilen kod</h4>
+                    <h4 className="text-sm font-semibold">Suggested code</h4>
                     <CopyButton text={improvement.suggested_code} />
                   </div>
                   <pre className="max-h-[40vh] overflow-auto rounded-md border bg-emerald-50 p-3 text-xs dark:bg-emerald-950/30">
@@ -114,15 +114,15 @@ export function ImprovementCard({ improvement }: { improvement: ImprovementData 
 
               <div className="flex gap-2 pt-2">
                 <Button size="sm" onClick={() => setStatus("fixed")} disabled={pending || improvement.status === "fixed"}>
-                  Düzeltildi olarak işaretle
+                  Mark as fixed
                 </Button>
                 {improvement.status === "open" ? (
                   <Button size="sm" variant="outline" onClick={() => setStatus("dismissed")} disabled={pending}>
-                    Yok say
+                    Dismiss
                   </Button>
                 ) : (
                   <Button size="sm" variant="outline" onClick={() => setStatus("open")} disabled={pending}>
-                    Yeniden aç
+                    Reopen
                   </Button>
                 )}
               </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export function CopyButton({ text, label = "Kopyala" }: { text: string; label?: string }) {
+export function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <Button
@@ -16,11 +16,11 @@ export function CopyButton({ text, label = "Kopyala" }: { text: string; label?: 
           setCopied(true);
           setTimeout(() => setCopied(false), 1500);
         } catch {
-          /* clipboard erişimi yoksa sessizce geç */
+          /* silently ignore if clipboard access is unavailable */
         }
       }}
     >
-      {copied ? "Kopyalandı ✓" : label}
+      {copied ? "Copied ✓" : label}
     </Button>
   );
 }

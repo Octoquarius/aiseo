@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Oturum çerezini her istekte yeniler ve korumalı rotaları yetkisiz erişime kapatır.
+// Refreshes the session cookie on every request and blocks unauthorized access to protected routes.
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 

@@ -12,7 +12,7 @@ export interface AuthState {
 export async function login(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
-  if (!email || !password) return { error: "E-posta ve şifre gerekli." };
+  if (!email || !password) return { error: "Email and password are required." };
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -25,19 +25,19 @@ export async function login(_prev: AuthState, formData: FormData): Promise<AuthS
 export async function signup(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
-  if (!email || !password) return { error: "E-posta ve şifre gerekli." };
-  if (password.length < 6) return { error: "Şifre en az 6 karakter olmalı." };
+  if (!email || !password) return { error: "Email and password are required." };
+  if (password.length < 6) return { error: "Password must be at least 6 characters." };
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) return { error: error.message };
 
-  // E-posta onayı kapalıysa oturum hemen oluşur.
+  // If email confirmation is disabled, the session is created immediately.
   if (data.session) {
     revalidatePath("/", "layout");
     redirect("/dashboard");
   }
-  return { message: "Hesabın oluşturuldu. E-postanı onayladıktan sonra giriş yapabilirsin." };
+  return { message: "Your account was created. You can log in after confirming your email." };
 }
 
 export async function logout() {

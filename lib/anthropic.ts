@@ -7,7 +7,7 @@ let client: Anthropic | null = null;
 
 export function getAnthropic(): Anthropic {
   if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error("ANTHROPIC_API_KEY tanımlı değil.");
+    throw new Error("ANTHROPIC_API_KEY is not set.");
   }
   if (!client) {
     client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

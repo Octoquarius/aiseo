@@ -57,21 +57,21 @@ export default async function VisibilityPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">AI Görünürlük Takibi</h1>
+        <h1 className="text-2xl font-semibold">AI Visibility Tracking</h1>
         <p className="text-muted-foreground">
-          Sektörünüze ait gerçek kullanıcı sorularını web-aramalı AI&apos;a sorar, markanızın önerilip
-          önerilmediğini ölçeriz.
+          We ask real user questions from your industry to a web-search-enabled AI and measure
+          whether your brand gets recommended.
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Motor: <strong>Claude (web aramalı)</strong> — canlı web sonuçlarına dayalı. (ChatGPT/Perplexity
-          gibi motorlar, ilgili API anahtarları eklendiğinde devreye alınabilir.)
+          Engine: <strong>Claude (web search)</strong> — based on live web results. (Engines like
+          ChatGPT/Perplexity can be enabled once the relevant API keys are added.)
         </p>
       </div>
 
       {siteList.length === 0 && (
         <Card>
           <CardContent className="py-10 text-center text-muted-foreground">
-            Önce Dashboard&apos;tan bir site ekleyin.
+            Add a site from the Dashboard first.
           </CardContent>
         </Card>
       )}
@@ -99,23 +99,23 @@ export default async function VisibilityPage() {
               <div className="flex flex-wrap items-center gap-6">
                 <div>
                   <div className={`text-3xl font-bold ${scoreColor(stats.rate)}`}>
-                    {stats.rate != null ? `%${stats.rate}` : "—"}
+                    {stats.rate != null ? `${stats.rate}%` : "—"}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    görünürlük oranı
-                    {stats.total > 0 && ` (${stats.appeared}/${stats.total} soruda önerildi)`}
+                    visibility rate
+                    {stats.total > 0 && ` (recommended in ${stats.appeared}/${stats.total} queries)`}
                   </div>
                 </div>
                 {lastRun && (
                   <div className="text-xs text-muted-foreground">
-                    Son tarama: {new Date(lastRun).toLocaleString("tr-TR")}
+                    Last scan: {new Date(lastRun).toLocaleString("en-US")}
                   </div>
                 )}
               </div>
 
               {competitors.length > 0 && (
                 <div>
-                  <p className="mb-1 text-sm font-medium">AI&apos;ın öne çıkardığı rakipler</p>
+                  <p className="mb-1 text-sm font-medium">Competitors highlighted by AI</p>
                   <div className="flex flex-wrap gap-2">
                     {competitors.map((c) => (
                       <Badge key={c.name} variant="secondary">
@@ -128,11 +128,11 @@ export default async function VisibilityPage() {
 
               {siteQueries.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Henüz sorgu yok. &quot;Görünürlük taraması çalıştır&quot; butonu otomatik üretip tarar.
+                  No queries yet. The &quot;Run visibility scan&quot; button will generate and run them automatically.
                 </p>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium">Test soruları ve sonuçlar</p>
+                  <p className="text-sm font-medium">Test questions and results</p>
                   {siteQueries.map((q) => {
                     const r = latest.find((x) => x.query_id === q.id);
                     return (
@@ -142,13 +142,13 @@ export default async function VisibilityPage() {
                           {r ? (
                             r.appeared ? (
                               <Badge className="shrink-0">
-                                Önerildi{r.rank ? ` · #${r.rank}` : ""}
+                                Recommended{r.rank ? ` · #${r.rank}` : ""}
                               </Badge>
                             ) : (
-                              <Badge variant="outline" className="shrink-0">Önerilmedi</Badge>
+                              <Badge variant="outline" className="shrink-0">Not recommended</Badge>
                             )
                           ) : (
-                            <Badge variant="secondary" className="shrink-0">Taranmadı</Badge>
+                            <Badge variant="secondary" className="shrink-0">Not scanned</Badge>
                           )}
                         </div>
                         {r?.appeared && r.snippet && (

@@ -12,7 +12,7 @@ export interface ActionResult {
   message?: string;
 }
 
-// Bir site için pipeline'ı çalıştırıp audit + improvements kayıtlarını yazar.
+// Runs the pipeline for a site and writes the audit + improvements records.
 async function persistAudit(siteId: string, url: string) {
   const output = await runAudit(url);
 
@@ -29,10 +29,10 @@ async function persistAudit(siteId: string, url: string) {
     })
     .select("id")
     .single();
-  if (auditErr || !audit) throw new Error(auditErr?.message || "Audit kaydedilemedi.");
+  if (auditErr || !audit) throw new Error(auditErr?.message || "Failed to save audit.");
 
-  // Yeniden tarama: önceki iyileştirmeleri sil ki tekrar/birikme olmasın.
-  // Her tarama, sitenin güncel iyileştirme setiyle değiştirilir.
+  // Rescan: delete the previous improvements so they don't duplicate/pile up.
+  // Each scan replaces the site's improvement set with the current one.
   await supabase.from("improvements").delete().eq("site_id", siteId);
 
   if (output.audit.issues.length > 0) {
@@ -58,7 +58,7 @@ async function persistAudit(siteId: string, url: string) {
     .eq("id", siteId);
 }
 
-// Sınırlı eşzamanlılıkla bir görev listesini çalıştırır.
+// Runs a list of tasks with bounded concurrency.
 async function runWithConcurrency<T>(items: T[], limit: number, fn: (item: T) => Promise<void>) {
   const queue = [...items];
   const workers = Array.from({ length: Math.min(limit, queue.length) }, async () => {
@@ -67,14 +67,14 @@ async function runWithConcurrency<T>(items: T[], limit: number, fn: (item: T) =>
       try {
         await fn(item);
       } catch (err) {
-        console.error("Audit hatası:", err);
+        console.error("Audit error:", err);
       }
     }
   });
   await Promise.all(workers);
 }
 
-// Birden çok URL ekler (satır/virgülle ayrılmış) ve her birini tarar.
+// Adds multiple URLs (separated by newline/comma) and scans each of them.
 export async function addSites(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const raw = String(formData.get("urls") || "");
   const candidates = raw
@@ -82,39 +82,39 @@ export async function addSites(_prev: ActionResult, formData: FormData): Promise
     .map((s) => s.trim())
     .filter(Boolean);
 
-  if (candidates.length === 0) return { ok: false, error: "En az bir URL girin." };
+  if (candidates.length === 0) return { ok: false, error: "Enter at least one URL." };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Oturum bulunamadı." };
+  if (!user) return { ok: false, error: "No session found." };
 
-  // URL'leri normalize et + geçersizleri ayıkla.
+  // Normalize URLs + filter out invalid ones.
   const valid: string[] = [];
   for (const c of candidates) {
     try {
       valid.push(sanitizeUrl(c));
     } catch {
-      /* geçersiz URL atlanır */
+      /* skip invalid URL */
     }
   }
-  if (valid.length === 0) return { ok: false, error: "Geçerli URL bulunamadı." };
+  if (valid.length === 0) return { ok: false, error: "No valid URL found." };
 
   const { data: inserted, error } = await supabase
     .from("sites")
     .insert(valid.map((url) => ({ user_id: user.id, url, name: new URL(url).hostname })))
     .select("id, url");
-  if (error || !inserted) return { ok: false, error: error?.message || "Site eklenemedi." };
+  if (error || !inserted) return { ok: false, error: error?.message || "Failed to add site." };
 
   await runWithConcurrency(inserted, 3, (s) => persistAudit(s.id, s.url));
 
   revalidatePath("/dashboard");
   revalidatePath("/improvements");
-  return { ok: true, message: `${inserted.length} site eklendi ve analiz edildi.` };
+  return { ok: true, message: `${inserted.length} site(s) added and analyzed.` };
 }
 
-// Mevcut bir siteyi yeniden tarar.
+// Rescans an existing site.
 export async function scanSite(siteId: string): Promise<ActionResult> {
   const supabase = await createClient();
   const { data: site, error } = await supabase
@@ -122,18 +122,18 @@ export async function scanSite(siteId: string): Promise<ActionResult> {
     .select("id, url")
     .eq("id", siteId)
     .single();
-  if (error || !site) return { ok: false, error: "Site bulunamadı." };
+  if (error || !site) return { ok: false, error: "Site not found." };
 
   try {
     await persistAudit(site.id, site.url);
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Tarama başarısız." };
+    return { ok: false, error: err instanceof Error ? err.message : "Scan failed." };
   }
 
   revalidatePath("/dashboard");
   revalidatePath(`/sites/${siteId}`);
   revalidatePath("/improvements");
-  return { ok: true, message: "Site yeniden tarandı." };
+  return { ok: true, message: "Site rescanned." };
 }
 
 export async function deleteSite(siteId: string): Promise<ActionResult> {

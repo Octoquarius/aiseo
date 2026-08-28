@@ -24,8 +24,8 @@ export function SiteCard({ site }: { site: SiteCardData }) {
   const onScan = () =>
     startTransition(async () => {
       const res = await scanSite(site.id);
-      if (res.ok) toast.success(res.message || "Tarandı.");
-      else toast.error(res.error || "Tarama başarısız.");
+      if (res.ok) toast.success(res.message || "Scanned.");
+      else toast.error(res.error || "Scan failed.");
     });
 
   const onDelete = () =>
@@ -33,7 +33,7 @@ export function SiteCard({ site }: { site: SiteCardData }) {
       setDeleting(true);
       const res = await deleteSite(site.id);
       if (!res.ok) {
-        toast.error(res.error || "Silinemedi.");
+        toast.error(res.error || "Could not delete.");
         setDeleting(false);
       }
     });
@@ -47,10 +47,10 @@ export function SiteCard({ site }: { site: SiteCardData }) {
           </Link>
           <p className="truncate text-sm text-muted-foreground">{site.url}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {site.openIssues} açık iyileştirme
+            {site.openIssues} open improvement{site.openIssues === 1 ? "" : "s"}
             {site.last_scanned_at
-              ? ` · son tarama ${new Date(site.last_scanned_at).toLocaleDateString("tr-TR")}`
-              : " · henüz taranmadı"}
+              ? ` · last scanned ${new Date(site.last_scanned_at).toLocaleDateString("en-US")}`
+              : " · not scanned yet"}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -62,10 +62,10 @@ export function SiteCard({ site }: { site: SiteCardData }) {
           </div>
           <div className="flex flex-col gap-1">
             <Button size="sm" variant="outline" onClick={onScan} disabled={pending}>
-              {pending ? "…" : "Tara"}
+              {pending ? "…" : "Scan"}
             </Button>
             <Button size="sm" variant="ghost" onClick={onDelete} disabled={pending}>
-              Sil
+              Delete
             </Button>
           </div>
         </div>

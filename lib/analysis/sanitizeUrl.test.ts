@@ -2,31 +2,31 @@ import { describe, it, expect } from "vitest";
 import { sanitizeUrl, originOf } from "./sanitizeUrl";
 
 describe("sanitizeUrl", () => {
-  it("protokolsüz girdiye https ekler", () => {
+  it("adds https to input without a protocol", () => {
     expect(sanitizeUrl("example.com")).toBe("https://example.com/");
   });
 
-  it("mevcut http protokolünü korur", () => {
+  it("preserves an existing http protocol", () => {
     expect(sanitizeUrl("http://example.com/path")).toBe("http://example.com/path");
   });
 
-  it("baştaki/sondaki boşlukları temizler", () => {
+  it("trims leading/trailing whitespace", () => {
     expect(sanitizeUrl("  example.com  ")).toBe("https://example.com/");
   });
 
-  it("hostname'i küçük harfe çevirir", () => {
+  it("lowercases the hostname", () => {
     expect(sanitizeUrl("HTTPS://Example.COM/Path")).toBe("https://example.com/Path");
   });
 
-  it("boş girdide hata fırlatır", () => {
+  it("throws on empty input", () => {
     expect(() => sanitizeUrl("   ")).toThrow();
   });
 
-  it("ftp gibi desteklenmeyen protokolde hata fırlatır", () => {
+  it("throws on an unsupported protocol like ftp", () => {
     expect(() => sanitizeUrl("ftp://example.com")).toThrow();
   });
 
-  it("originOf kök origin döndürür", () => {
+  it("originOf returns the root origin", () => {
     expect(originOf("https://example.com/a/b?c=1")).toBe("https://example.com");
   });
 });

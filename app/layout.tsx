@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AISEO — AI Görünürlük & Önerilebilirlik Aracı",
+  title: "AISEO — AI Visibility & Recommendability Tool",
   description:
-    "Web sitenizi ChatGPT, Perplexity ve Claude gibi AI motorları için daha görünür ve önerilebilir hale getirin.",
+    "Make your website more visible and recommendable to AI engines like ChatGPT, Perplexity, and Claude.",
 };
 
 export default function RootLayout({

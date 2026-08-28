@@ -4,10 +4,10 @@ import { askEngine } from "./askEngine";
 import { analyzeAnswer } from "./analyzeAnswer";
 import { brandAliases } from "./brand";
 
-// Şu an aktif motorlar. İleride openai/perplexity eklendiğinde buraya eklenir.
+// Currently active engines. Add openai/perplexity here when they're supported later.
 export const ACTIVE_ENGINES: VisibilityEngine[] = ["claude-web"];
 
-// Tek bir (sorgu, motor) için uçtan uca prob: cevabı al + analiz et.
+// End-to-end probe for a single (query, engine) pair: get the answer + analyze it.
 export async function probeOne(params: {
   brand: string;
   url: string;

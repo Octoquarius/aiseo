@@ -1,9 +1,9 @@
--- AI SEO / GEO aracı — başlangıç şeması
--- Tüm tablolar Row Level Security (RLS) ile kullanıcıya kısıtlıdır.
--- NOT: RLS satır erişimini denetler; tablo düzeyinde GRANT (en altta) ayrıca gereklidir.
+-- AI SEO / GEO tool — initial schema
+-- All tables are restricted to the owning user via Row Level Security (RLS).
+-- NOTE: RLS controls row access; table-level GRANT (at the bottom) is also required.
 
 -- ============================================================
--- profiles: auth.users ile 1-1
+-- profiles: 1-1 with auth.users
 -- ============================================================
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
@@ -21,7 +21,7 @@ create policy "profiles_update_own" on public.profiles
 create policy "profiles_insert_own" on public.profiles
   for insert with check (auth.uid() = id);
 
--- Yeni kullanıcı kaydolduğunda otomatik profil oluştur.
+-- Automatically create a profile when a new user signs up.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -40,12 +40,12 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
--- SECURITY DEFINER fonksiyonun REST RPC üzerinden çağrılmasını engelle
--- (trigger tablo sahibi yetkisiyle çalıştığı için etkilenmez).
+-- Prevent the SECURITY DEFINER function from being called via REST RPC
+-- (the trigger itself is unaffected since it runs with the table owner's privileges).
 revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
 -- ============================================================
--- sites: kullanıcının takip ettiği URL'ler
+-- sites: URLs tracked by the user
 -- ============================================================
 create table if not exists public.sites (
   id uuid primary key default gen_random_uuid(),
@@ -71,7 +71,7 @@ create policy "sites_delete_own" on public.sites
   for delete using (auth.uid() = user_id);
 
 -- ============================================================
--- audits: bir site için yapılan analiz çalıştırması
+-- audits: an analysis run performed for a site
 -- ============================================================
 create table if not exists public.audits (
   id uuid primary key default gen_random_uuid(),
@@ -102,7 +102,7 @@ create policy "audits_delete_own" on public.audits
   );
 
 -- ============================================================
--- improvements: audit'ten çıkan tek tek sorunlar (Improvements arayüzü)
+-- improvements: individual issues produced by an audit (Improvements UI)
 -- ============================================================
 create table if not exists public.improvements (
   id uuid primary key default gen_random_uuid(),
@@ -142,8 +142,8 @@ create policy "improvements_delete_own" on public.improvements
   );
 
 -- ============================================================
--- FAZ 2 — şema iskeleti (dolum mantığı sonraya bırakıldı)
--- AI görünürlük takibi + satış dönüşümü atfı.
+-- PHASE 2 — schema skeleton (population logic deferred to later)
+-- AI visibility tracking + sales conversion attribution.
 -- ============================================================
 create table if not exists public.visibility_queries (
   id uuid primary key default gen_random_uuid(),
@@ -189,8 +189,8 @@ create policy "conv_select_own" on public.conversions
   );
 
 -- ============================================================
--- Tablo düzeyinde izinler (RLS'e ek olarak ZORUNLU)
--- authenticated = giriş yapmış kullanıcı; anon = giriş yapmamış.
+-- Table-level permissions (REQUIRED in addition to RLS)
+-- authenticated = signed-in user; anon = not signed in.
 -- ============================================================
 grant usage on schema public to anon, authenticated;
 

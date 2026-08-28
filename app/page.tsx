@@ -14,21 +14,21 @@ export default async function Home() {
     <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20 text-center">
       <div className="space-y-4">
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          Web siteniz AI&apos;a <span className="text-primary">görünür</span> mü?
+          Is your website <span className="text-primary">visible</span> to AI?
         </h1>
         <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-          URL&apos;nizi ekleyin; ChatGPT, Perplexity ve Claude gibi AI motorlarının
-          sitenizi ne kadar anladığını ve önerebileceğini ölçelim. Her sorun için
-          kopyala-yapıştır kod düzeltmesi alın.
+          Add your URL; we&apos;ll measure how well AI engines like ChatGPT, Perplexity, and
+          Claude understand and can recommend your site. Get copy-paste code fixes for every
+          issue.
         </p>
       </div>
       <div className="flex gap-3">
         {user ? (
-          <Button size="lg" render={<Link href="/dashboard" />}>Panele Git</Button>
+          <Button size="lg" render={<Link href="/dashboard" />}>Go to Dashboard</Button>
         ) : (
           <>
-            <Button size="lg" render={<Link href="/signup" />}>Ücretsiz Başla</Button>
-            <Button size="lg" variant="outline" render={<Link href="/login" />}>Giriş Yap</Button>
+            <Button size="lg" render={<Link href="/signup" />}>Get Started Free</Button>
+            <Button size="lg" variant="outline" render={<Link href="/login" />}>Log In</Button>
           </>
         )}
       </div>

@@ -66,7 +66,7 @@ export default async function SiteDetailPage({
       {!audit ? (
         <Card>
           <CardContent className="py-10 text-center text-muted-foreground">
-            Bu site henüz taranmadı. <Button variant="link" render={<Link href="/dashboard" />}>Dashboard&apos;a dön</Button>
+            This site hasn&apos;t been scanned yet. <Button variant="link" render={<Link href="/dashboard" />}>Back to Dashboard</Button>
           </CardContent>
         </Card>
       ) : (
@@ -74,7 +74,7 @@ export default async function SiteDetailPage({
           {audit.summary && (
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Özet</CardTitle>
+                <CardTitle className="text-base">Summary</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">{audit.summary}</p>
@@ -100,11 +100,11 @@ export default async function SiteDetailPage({
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-lg font-medium">Açık iyileştirmeler ({issues.length})</h2>
+            <h2 className="text-lg font-medium">Open improvements ({issues.length})</h2>
             {issues.length === 0 ? (
               <Card>
                 <CardContent className="py-8 text-center text-muted-foreground">
-                  Tüm iyileştirmeler çözülmüş görünüyor. 🎉
+                  All improvements appear to be resolved. 🎉
                 </CardContent>
               </Card>
             ) : (

@@ -1,5 +1,5 @@
-// n8n "Get HTML from Website" düğümünün portu.
-// LLM tarayıcılarının gördüğü gibi, JS çalıştırmadan ham HTML çeker.
+// Port of n8n's "Get HTML from Website" node.
+// Fetches raw HTML without executing JS, the way LLM crawlers see it.
 
 export interface FetchHtmlResult {
   html: string;
@@ -7,7 +7,7 @@ export interface FetchHtmlResult {
   statusCode: number;
 }
 
-// Googlebot benzeri User-Agent — birçok site bot trafiğine ham HTML döndürür.
+// Googlebot-like User-Agent — many sites return raw HTML to bot traffic.
 const USER_AGENT =
   "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
@@ -33,17 +33,17 @@ export async function fetchHtml(
     return { html, finalUrl: res.url || url, statusCode: res.status };
   } catch (err) {
     if (err instanceof Error && err.name === "AbortError") {
-      throw new Error(`Site ${timeoutMs}ms içinde yanıt vermedi: ${url}`);
+      throw new Error(`Site did not respond within ${timeoutMs}ms: ${url}`);
     }
     throw new Error(
-      `Site getirilemedi (${url}): ${err instanceof Error ? err.message : String(err)}`,
+      `Failed to fetch site (${url}): ${err instanceof Error ? err.message : String(err)}`,
     );
   } finally {
     clearTimeout(timer);
   }
 }
 
-// Basit metin kaynaklarını (robots.txt, llms.txt) getirir; hata durumunda null.
+// Fetches simple text resources (robots.txt, llms.txt); null on error.
 export async function fetchText(
   url: string,
   timeoutMs = 8000,

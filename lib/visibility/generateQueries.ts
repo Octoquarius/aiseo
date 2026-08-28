@@ -4,14 +4,14 @@ import { getAnthropic, DEFAULT_MODEL } from "@/lib/anthropic";
 const QUERY_TOOL: Anthropic.Tool = {
   name: "report_seed_queries",
   description:
-    "Bir markanın AI motorlarında görünürlüğünü test etmek için kullanılacak gerçekçi kullanıcı sorularını raporla.",
+    "Report realistic user questions to be used for testing a brand's visibility in AI engines.",
   input_schema: {
     type: "object",
     properties: {
       queries: {
         type: "array",
         description:
-          "Gerçek kullanıcıların bu sektörde bir ürün/hizmet ararken AI'a soracağı türden, MARKAYI İÇERMEYEN sorular. 5-7 adet.",
+          "Questions of the kind real users would ask an AI when looking for a product/service in this industry, WITHOUT MENTIONING THE BRAND. 5-7 items.",
         items: { type: "string" },
       },
     },
@@ -19,8 +19,8 @@ const QUERY_TOOL: Anthropic.Tool = {
   },
 };
 
-// Site bağlamından (marka, URL, içerik önizleme) tohum sorgular üretir.
-// Sorular markayı içermez; amaç markanın 'organik' olarak önerilip önerilmediğini ölçmek.
+// Generates seed queries from site context (brand, URL, content preview).
+// The queries don't mention the brand; the goal is to measure whether the brand is 'organically' recommended.
 export async function generateQueries(params: {
   brand: string;
   url: string;
@@ -31,22 +31,22 @@ export async function generateQueries(params: {
   const anthropic = getAnthropic();
   const model = params.model || DEFAULT_MODEL;
 
-  const prompt = `Bir markanın AI arama motorlarındaki (ChatGPT, Perplexity, Claude) görünürlüğünü ölçeceğiz.
+  const prompt = `We're going to measure a brand's visibility in AI search engines (ChatGPT, Perplexity, Claude).
 
-Marka: ${params.brand}
+Brand: ${params.brand}
 Site: ${params.url}
-${params.contextSummary ? `Site özeti: ${params.contextSummary}` : ""}
-${params.previewText ? `İçerik önizleme: "${params.previewText.slice(0, 300)}"` : ""}
+${params.contextSummary ? `Site summary: ${params.contextSummary}` : ""}
+${params.previewText ? `Content preview: "${params.previewText.slice(0, 300)}"` : ""}
 
-Görev: Bu markanın sektöründe, gerçek kullanıcıların bir ürün/hizmet/öneri ararken bir AI asistanına soracağı türden 5-7 doğal soru üret.
+Task: Generate 5-7 natural questions of the kind real users would ask an AI assistant when looking for a product/service/recommendation in this brand's industry.
 
-Kurallar:
-- Sorular MARKA ADINI İÇERMEMELİ (amaç: marka kendiliğinden önerilecek mi?).
-- Türkçe, doğal, satın alma/öneri niyeti taşıyan sorular olsun.
-- Örnek kalıp: "en iyi ... markaları neler?", "... için hangi ...yi önerirsin?", "uygun fiyatlı ... nereden alınır?".
-- Sektöre özgü ve spesifik ol; çok genel olma.
+Rules:
+- Questions MUST NOT MENTION THE BRAND NAME (goal: will the brand be recommended organically?).
+- Make them natural, English questions carrying purchase/recommendation intent.
+- Example patterns: "what are the best ... brands?", "which ... would you recommend for ...?", "where can I find affordable ...?".
+- Be industry-specific and concrete; don't be too generic.
 
-Sonucu yalnızca report_seed_queries aracıyla ver.`;
+Return the result only via the report_seed_queries tool.`;
 
   const res = await anthropic.messages.create({
     model,

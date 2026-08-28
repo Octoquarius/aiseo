@@ -11,24 +11,24 @@ export function VisibilityActions({ siteId }: { siteId: string }) {
   const run = () =>
     startTransition(async () => {
       const res = await runSiteVisibility(siteId);
-      if (res.ok) toast.success(res.message || "Tarandı.");
-      else toast.error(res.error || "Tarama başarısız.");
+      if (res.ok) toast.success(res.message || "Scanned.");
+      else toast.error(res.error || "Scan failed.");
     });
 
   const regen = () =>
     startTransition(async () => {
       const res = await generateSiteQueries(siteId);
-      if (res.ok) toast.success(res.message || "Sorgular üretildi.");
-      else toast.error(res.error || "Üretim başarısız.");
+      if (res.ok) toast.success(res.message || "Queries generated.");
+      else toast.error(res.error || "Generation failed.");
     });
 
   return (
     <div className="flex gap-2">
       <Button size="sm" onClick={run} disabled={pending}>
-        {pending ? "Çalışıyor… (bu biraz sürebilir)" : "Görünürlük taraması çalıştır"}
+        {pending ? "Running… (this may take a while)" : "Run visibility scan"}
       </Button>
       <Button size="sm" variant="outline" onClick={regen} disabled={pending}>
-        Soruları yeniden üret
+        Regenerate questions
       </Button>
     </div>
   );

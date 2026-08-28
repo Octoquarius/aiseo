@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-// Server Component / Server Action / Route Handler tarafı Supabase istemcisi.
+// Server Component / Server Action / Route Handler side Supabase client.
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -19,8 +19,8 @@ export async function createClient() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // Server Component içinden çağrıldığında set hatası yok sayılabilir;
-            // oturum yenileme middleware tarafından yapılır.
+            // A set error can be ignored when called from a Server Component;
+            // session refresh is handled by the middleware.
           }
         },
       },

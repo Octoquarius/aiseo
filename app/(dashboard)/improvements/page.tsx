@@ -45,7 +45,7 @@ export default async function ImprovementsPage() {
   const empty = (
     <Card>
       <CardContent className="py-10 text-center text-muted-foreground">
-        Burada gösterilecek iyileştirme yok. Dashboard&apos;tan bir site tarayın.
+        No improvements to show here yet. Scan a site from the Dashboard.
       </CardContent>
     </Card>
   );
@@ -55,14 +55,14 @@ export default async function ImprovementsPage() {
       <div>
         <h1 className="text-2xl font-semibold">Improvements</h1>
         <p className="text-muted-foreground">
-          Her sorunun yanındaki <strong>Improve</strong> butonuna basın; kodu nereye, nasıl ekleyeceğinizi görün.
+          Click the <strong>Improve</strong> button next to each issue to see where and how to add the fix.
         </p>
       </div>
 
       <Tabs defaultValue="open">
         <TabsList>
-          <TabsTrigger value="open">Açık ({open.length})</TabsTrigger>
-          <TabsTrigger value="resolved">Çözülen ({resolved.length})</TabsTrigger>
+          <TabsTrigger value="open">Open ({open.length})</TabsTrigger>
+          <TabsTrigger value="resolved">Resolved ({resolved.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="open" className="space-y-3 pt-4">
           {open.length === 0 ? empty : open.map((i) => <ImprovementCard key={i.id} improvement={i} />)}

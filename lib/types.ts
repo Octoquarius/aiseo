@@ -1,4 +1,4 @@
-// Paylaşılan tipler — analiz motoru ve UI arasında.
+// Shared types — between the analysis engine and the UI.
 
 export type GeoCategory =
   | "ai_crawlability"
@@ -9,19 +9,19 @@ export type GeoCategory =
   | "recommendability";
 
 export const GEO_CATEGORIES: { key: GeoCategory; label: string; labelTr: string }[] = [
-  { key: "ai_crawlability", label: "AI Crawlability", labelTr: "AI Taranabilirlik" },
-  { key: "structured_data", label: "Structured Data", labelTr: "Yapısal Veri" },
-  { key: "content_structure", label: "Content & Answerability", labelTr: "İçerik & Cevaplanabilirlik" },
-  { key: "entity_authority", label: "Entity & Authority", labelTr: "Varlık & Otorite" },
-  { key: "readability", label: "Readability", labelTr: "Okunabilirlik" },
-  { key: "recommendability", label: "Recommendability", labelTr: "Önerilebilirlik" },
+  { key: "ai_crawlability", label: "AI Crawlability", labelTr: "AI Crawlability" },
+  { key: "structured_data", label: "Structured Data", labelTr: "Structured Data" },
+  { key: "content_structure", label: "Content & Answerability", labelTr: "Content & Answerability" },
+  { key: "entity_authority", label: "Entity & Authority", labelTr: "Entity & Authority" },
+  { key: "readability", label: "Readability", labelTr: "Readability" },
+  { key: "recommendability", label: "Recommendability", labelTr: "Recommendability" },
 ];
 
 export type Severity = "high" | "medium" | "low";
 
 export type ImprovementStatus = "open" | "fixed" | "dismissed";
 
-// Ham HTML özellik çıkarımı (cheerio) sonucu — n8n "Extract HTML Features" portu + genişletme.
+// Result of raw HTML feature extraction (cheerio) — port of n8n's "Extract HTML Features" + extensions.
 export interface HtmlFeatures {
   finalUrl: string;
   statusCode: number;
@@ -53,19 +53,19 @@ export interface HtmlFeatures {
   lang: string | null;
 }
 
-// robots.txt / llms.txt taraması.
+// robots.txt / llms.txt scan.
 export interface RobotsInfo {
   robotsTxtUrl: string;
   robotsTxtFound: boolean;
   llmsTxtUrl: string;
   llmsTxtFound: boolean;
   sitemapFound: boolean;
-  // AI bot adı -> engelli mi (true = engelli)
+  // AI bot name -> blocked? (true = blocked)
   blockedAiBots: string[];
   allowedAiBots: string[];
 }
 
-// Claude'un yapısal denetim çıktısı (tek bir issue).
+// Claude's structured audit output (a single issue).
 export interface AuditIssue {
   category: GeoCategory;
   severity: Severity;
@@ -76,7 +76,7 @@ export interface AuditIssue {
   suggested_code: string;
 }
 
-// Claude denetiminin tam çıktısı.
+// Full output of a Claude audit.
 export interface AuditResult {
   overall_score: number;
   category_scores: Record<GeoCategory, number>;
@@ -84,7 +84,7 @@ export interface AuditResult {
   issues: AuditIssue[];
 }
 
-// Pipeline'ın birleşik çıktısı (DB'ye yazılmadan önce).
+// Combined pipeline output (before it's written to the DB).
 export interface FullAuditOutput {
   features: HtmlFeatures;
   robots: RobotsInfo;
@@ -93,21 +93,21 @@ export interface FullAuditOutput {
 }
 
 // ============================================================
-// Faz 2: AI görünürlük takibi
+// Phase 2: AI visibility tracking
 // ============================================================
 
-// Şu an web-aramalı Claude tek motor; ileride openai/perplexity eklenebilir.
+// Currently web-search-enabled Claude is the only engine; openai/perplexity may be added later.
 export type VisibilityEngine = "claude-web";
 
 export interface SeedQuery {
   query_text: string;
 }
 
-// Bir sorgunun bir motordaki sonucunun analizi.
+// Analysis of a single query's result on a single engine.
 export interface ProbeResult {
   appeared: boolean;
-  rank: number | null; // anıldıysa kaçıncı sırada (1 = ilk önerilen), yoksa null
-  snippet: string | null; // markadan bahseden cümle/alıntı
-  competitors: string[]; // cevapta öne çıkan rakip marka/site adları
-  raw_answer: string; // motorun ham cevabı
+  rank: number | null; // position if mentioned (1 = first recommended), otherwise null
+  snippet: string | null; // sentence/quote mentioning the brand
+  competitors: string[]; // competitor brand/site names highlighted in the answer
+  raw_answer: string; // the engine's raw answer
 }

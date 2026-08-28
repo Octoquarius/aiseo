@@ -25,14 +25,14 @@ async function getOwnedSite(siteId: string): Promise<SiteRow | null> {
   return (data as SiteRow) ?? null;
 }
 
-// Site için tohum sorgular üretir (varsa eskileri değiştirir).
+// Generates seed queries for a site (replaces old ones if any exist).
 export async function generateSiteQueries(siteId: string): Promise<ActionResult> {
   const site = await getOwnedSite(siteId);
-  if (!site) return { ok: false, error: "Site bulunamadı." };
+  if (!site) return { ok: false, error: "Site not found." };
 
   const supabase = await createClient();
 
-  // Bağlam için en son audit özetini/önizlemesini al.
+  // Fetch the latest audit summary/preview for context.
   const { data: audit } = await supabase
     .from("audits")
     .select("summary, raw_features")
@@ -54,12 +54,12 @@ export async function generateSiteQueries(siteId: string): Promise<ActionResult>
       previewText,
     });
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Sorgu üretimi başarısız." };
+    return { ok: false, error: err instanceof Error ? err.message : "Query generation failed." };
   }
 
-  if (queries.length === 0) return { ok: false, error: "Sorgu üretilemedi." };
+  if (queries.length === 0) return { ok: false, error: "Failed to generate queries." };
 
-  // Eski sorguları değiştir (sonuçları FK cascade ile temizlenir).
+  // Replace the old queries (their results are cleared via FK cascade).
   await supabase.from("visibility_queries").delete().eq("site_id", siteId);
   const { error } = await supabase
     .from("visibility_queries")
@@ -67,18 +67,18 @@ export async function generateSiteQueries(siteId: string): Promise<ActionResult>
   if (error) return { ok: false, error: error.message };
 
   revalidatePath("/visibility");
-  return { ok: true, message: `${queries.length} sorgu üretildi.` };
+  return { ok: true, message: `Generated ${queries.length} quer${queries.length === 1 ? "y" : "ies"}.` };
 }
 
-// Site için görünürlük taraması: her sorgu × motor için prob çalıştır, sonuçları yaz.
+// Visibility scan for a site: run a probe for each query × engine pair and write the results.
 export async function runSiteVisibility(siteId: string): Promise<ActionResult> {
   const site = await getOwnedSite(siteId);
-  if (!site) return { ok: false, error: "Site bulunamadı." };
+  if (!site) return { ok: false, error: "Site not found." };
 
   const supabase = await createClient();
   const brand = deriveBrand(site.url, site.name, site.brand);
 
-  // Sorgu yoksa otomatik üret.
+  // Auto-generate queries if none exist.
   let { data: queryRows } = await supabase
     .from("visibility_queries")
     .select("id, query_text")
@@ -92,9 +92,9 @@ export async function runSiteVisibility(siteId: string): Promise<ActionResult> {
       .select("id, query_text")
       .eq("site_id", siteId));
   }
-  if (!queryRows || queryRows.length === 0) return { ok: false, error: "Çalıştırılacak sorgu yok." };
+  if (!queryRows || queryRows.length === 0) return { ok: false, error: "No queries to run." };
 
-  // (sorgu × motor) çiftlerini oluştur.
+  // Build (query × engine) pairs.
   const jobs = queryRows.flatMap((q) =>
     ACTIVE_ENGINES.map((engine) => ({ queryId: q.id, queryText: q.query_text, engine })),
   );
@@ -111,7 +111,7 @@ export async function runSiteVisibility(siteId: string): Promise<ActionResult> {
       return { job, result };
     });
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Görünürlük taraması başarısız." };
+    return { ok: false, error: err instanceof Error ? err.message : "Visibility scan failed." };
   }
 
   const rows = probed.map(({ job, result }) => ({
@@ -134,6 +134,6 @@ export async function runSiteVisibility(siteId: string): Promise<ActionResult> {
   revalidatePath("/dashboard");
   return {
     ok: true,
-    message: `${rows.length} sorgu tarandı — ${appeared} tanesinde markanız önerildi.`,
+    message: `Scanned ${rows.length} queries — your brand was recommended in ${appeared} of them.`,
   };
 }

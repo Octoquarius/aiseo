@@ -2,7 +2,7 @@ import type { RobotsInfo } from "@/lib/types";
 import { fetchText } from "./fetchHtml";
 import { originOf } from "./sanitizeUrl";
 
-// İçeriği AI motorlarına besleyen önemli botlar.
+// Key bots that feed content to AI engines.
 export const AI_BOTS = [
   "GPTBot",
   "ChatGPT-User",
@@ -24,7 +24,7 @@ interface RobotsGroup {
   allow: string[];
 }
 
-// robots.txt'i User-agent gruplarına ayrıştırır.
+// Parses robots.txt into User-agent groups.
 function parseRobots(text: string): RobotsGroup[] {
   const groups: RobotsGroup[] = [];
   let current: RobotsGroup | null = null;
@@ -56,21 +56,21 @@ function parseRobots(text: string): RobotsGroup[] {
   return groups;
 }
 
-// Belirli bir bot kök ("/") için engellenmiş mi? En spesifik eşleşen grup kazanır.
+// Is a given bot blocked at the root ("/")? The most specific matching group wins.
 function isBotBlocked(groups: RobotsGroup[], bot: string): boolean {
   const botLower = bot.toLowerCase();
   const specific = groups.find((g) => g.agents.includes(botLower));
   const wildcard = groups.find((g) => g.agents.includes("*"));
   const group = specific ?? wildcard;
-  if (!group) return false; // kural yok = izinli
+  if (!group) return false; // no rule = allowed
 
-  // Allow "/" varsa açıkça izinli kabul et.
+  // Explicitly allowed if Allow "/" is present.
   if (group.allow.some((p) => p === "/" || p === "")) return false;
-  // Disallow "/" = tüm site engelli.
+  // Disallow "/" = the whole site is blocked.
   return group.disallow.some((p) => p === "/");
 }
 
-// Saf değerlendirme — robots.txt metninden AI bot erişimini hesaplar (test edilebilir).
+// Pure evaluation — computes AI bot access from robots.txt text (testable).
 export function evaluateRobotsTxt(text: string): {
   sitemapFound: boolean;
   blockedAiBots: string[];
@@ -110,7 +110,7 @@ export async function checkRobots(pageUrl: string): Promise<RobotsInfo> {
     blockedAiBots = evaluated.blockedAiBots;
     allowedAiBots = evaluated.allowedAiBots;
   } else {
-    // robots.txt yoksa varsayılan: tüm botlar izinli.
+    // Default when there's no robots.txt: all bots are allowed.
     allowedAiBots = [...AI_BOTS];
   }
 

@@ -78,26 +78,26 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <p className="text-muted-foreground">Tüm sitelerinizin AI görünürlük durumu tek ekranda.</p>
+        <p className="text-muted-foreground">AI visibility status for all your sites in one screen.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Takip edilen site" value={String(siteList.length)} />
+        <StatCard title="Tracked sites" value={String(siteList.length)} />
         <StatCard
-          title="Ortalama GEO skoru"
+          title="Average GEO score"
           value={avgScore != null ? String(avgScore) : "—"}
           valueClass={scoreColor(avgScore)}
-          hint="0–100 arası AI görünürlük/önerilebilirlik"
+          hint="AI visibility/recommendability from 0-100"
         />
-        <StatCard title="Açık iyileştirme" value={String(totalOpen)} hint="Improvements sekmesinde" />
+        <StatCard title="Open improvements" value={String(totalOpen)} hint="In the Improvements tab" />
         <StatCard
-          title="AI aramalarında görünürlük"
-          value={visStats.rate != null ? `%${visStats.rate}` : "—"}
+          title="Visibility in AI searches"
+          value={visStats.rate != null ? `${visStats.rate}%` : "—"}
           valueClass={scoreColor(visStats.rate)}
           hint={
             visStats.total > 0
-              ? `${visStats.appeared}/${visStats.total} soruda önerildiniz`
-              : "Visibility sekmesinden tarama başlatın"
+              ? `Recommended in ${visStats.appeared}/${visStats.total} queries`
+              : "Start a scan from the Visibility tab"
           }
         />
       </div>
@@ -105,11 +105,11 @@ export default async function DashboardPage() {
       <AddSitesForm />
 
       <div className="space-y-3">
-        <h2 className="text-lg font-medium">Siteleriniz</h2>
+        <h2 className="text-lg font-medium">Your sites</h2>
         {cards.length === 0 ? (
           <Card>
             <CardContent className="py-10 text-center text-muted-foreground">
-              Henüz site eklemediniz. Yukarıdan bir URL ekleyerek başlayın.
+              You haven&apos;t added any sites yet. Add a URL above to get started.
             </CardContent>
           </Card>
         ) : (
