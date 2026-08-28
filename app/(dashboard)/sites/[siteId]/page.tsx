@@ -88,7 +88,7 @@ export default async function SiteDetailPage({
               return (
                 <Card key={cat.key}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">{cat.labelTr}</CardTitle>
+                    <CardTitle className="text-sm font-medium">{cat.label}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className={`text-2xl font-bold ${scoreColor(value)}`}>{value}</div>

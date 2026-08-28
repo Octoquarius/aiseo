@@ -33,7 +33,7 @@ export interface ImprovementData {
 }
 
 function categoryLabel(key: string) {
-  return GEO_CATEGORIES.find((c) => c.key === key)?.labelTr ?? key;
+  return GEO_CATEGORIES.find((c) => c.key === key)?.label ?? key;
 }
 
 export function ImprovementCard({ improvement }: { improvement: ImprovementData }) {
